@@ -18,5 +18,9 @@ namespace AppBuilderDataAPI.Data.Models
         [Required(ErrorMessage = "Duration in days is required")]
         [Range(1, 365, ErrorMessage = "Duration must be between 1 and 365 days")]
         public int DurationInDays { get; set; }
+
+        [Required(ErrorMessage = "Photo URL is required")]
+        [StringLength(500, ErrorMessage = "Photo URL can't be longer than 500 characters")]
+        public string PhotoUrl { get; set; } = null!; // Link to membership photo
     }
 }

@@ -19,23 +19,25 @@ namespace AppBuilderDataAPI
             builder.Services.AddControllers(configure =>
             {
                 configure.ReturnHttpNotAcceptable = true;
-            }).AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                });
 
-            //CORS Policy configuration
+            }).AddJsonOptions(options =>
+              {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+              })
+                .AddXmlDataContractSerializerFormatters();
+            
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
-                builder =>
-                {
-                    builder.WithOrigins("*") // Add here all the origins that you want to allow.
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials(); // This allows cookies to be sent with the CORS requests.
+                options.AddPolicy(
+                    name:"AllowAll",
+                    policy =>
+                    {
+                       policy.AllowAnyOrigin() 
+                             .AllowAnyHeader()
+                             .AllowAnyMethod();
+                          
+                    });
                 });
-            });
 
             // Database connection configuration
             builder.Services.AddDbContext<AppBuilderDataDbContext>(options =>
@@ -50,8 +52,17 @@ namespace AppBuilderDataAPI
 
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
+            // Build the app
+            var app = builder.Build();
 
-            return builder.Build();
+            // Seed the database
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppBuilderDataDbContext>();
+                dbContext.Seed();  // Call the Seed method
+            }
+
+            return app;
         }
 
         public static WebApplication ConfigurePipeline(this WebApplication app)
@@ -62,17 +73,17 @@ namespace AppBuilderDataAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowAll");
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseResponseCaching();
+            //app.UseResponseCaching();
 
-            // app.UseRouting();
-
-            app.UseCors("AllowAll");
+            app.UseRouting();
 
             app.UseAuthentication();
 

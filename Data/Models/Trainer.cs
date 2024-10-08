@@ -1,4 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AppBuilderDataAPI.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppBuilderDataAPI.Data.Models
 {
@@ -30,7 +34,7 @@ namespace AppBuilderDataAPI.Data.Models
         public Trainer()
         {
 
-           PersonalTrainingSessions = new List<PersonalTrainingSession>();
+            PersonalTrainingSessions = new List<PersonalTrainingSession>();
             GroupSessions = new List<GroupSession>();
         }
     }

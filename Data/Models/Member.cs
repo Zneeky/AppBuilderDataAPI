@@ -17,8 +17,16 @@ namespace AppBuilderDataAPI.Data.Models
         [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = null!;
 
+        [Required(ErrorMessage = "Email is required")]
+        [StringLength(100,ErrorMessage = "Invalid password length")]
+        public string Password { get; set; } = null!;
+
         [Required(ErrorMessage = "Date of birth is required")]
         public DateTime DateOfBirth { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [StringLength(100, ErrorMessage = "Invalid password length")]
+        public string ProfilePicUrl { get; set; } = null!;
 
         // Membership Details
         [Required]

@@ -34,151 +34,139 @@ namespace AppBuilderDataAPI.Data
                 .HasOne(pts => pts.Trainer)
                 .WithMany(t => t.PersonalTrainingSessions)
                 .HasForeignKey(pts => pts.TrainerId)
-                .OnDelete(DeleteBehavior.NoAction); ;
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<GroupSession>()
                .HasOne(gs => gs.Trainer)
                .WithMany(t => t.GroupSessions)
                .HasForeignKey(pts => pts.TrainerId)
-               .OnDelete(DeleteBehavior.NoAction); ;
-
-
-            // Seed Memberships (required for the foreign key MembershipId in Member)
-            modelBuilder.Entity<Membership>().HasData(
-                new Membership { MembershipId = 1, Type = "Standard", Price = 50, DurationInDays = 30 },
-                new Membership { MembershipId = 2, Type = "Premium", Price = 100, DurationInDays = 30 }
-            );
-
-            // Seed Members
-            modelBuilder.Entity<Member>().HasData(
-                new Member
-                {
-                    MemberId = 1,
-                    FullName = "John Doe",
-                    Email = "john.doe@example.com",
-                    DateOfBirth = new DateTime(1985, 5, 15),
-                    MembershipId = 1, // Standard Membership
-                    RegistrationDate = DateTime.Now.AddYears(-1), // Registered 1 year ago
-                    IsActive = true
-                },
-                new Member
-                {
-                    MemberId = 2,
-                    FullName = "Jane Smith",
-                    Email = "jane.smith@example.com",
-                    DateOfBirth = new DateTime(1990, 3, 22),
-                    MembershipId = 2, // Premium Membership
-                    RegistrationDate = DateTime.Now.AddMonths(-6), // Registered 6 months ago
-                    IsActive = true
-                },
-                new Member
-                {
-                    MemberId = 3,
-                    FullName = "Michael Brown",
-                    Email = "michael.brown@example.com",
-                    DateOfBirth = new DateTime(1982, 8, 10),
-                    MembershipId = 1, // Standard Membership
-                    RegistrationDate = DateTime.Now.AddMonths(-3), // Registered 3 months ago
-                    IsActive = true
-                },
-                new Member
-                {
-                    MemberId = 4,
-                    FullName = "Alice Johnson",
-                    Email = "alice.johnson@example.com",
-                    DateOfBirth = new DateTime(1995, 1, 17),
-                    MembershipId = 2, // Premium Membership
-                    RegistrationDate = DateTime.Now.AddYears(-2), // Registered 2 years ago
-                    IsActive = false // Inactive member
-                },
-                new Member
-                {
-                    MemberId = 5,
-                    FullName = "Chris Evans",
-                    Email = "chris.evans@example.com",
-                    DateOfBirth = new DateTime(1988, 11, 5),
-                    MembershipId = 1, // Standard Membership
-                    RegistrationDate = DateTime.Now.AddYears(-1).AddMonths(-2), // Registered 14 months ago
-                    IsActive = true
-                }
-            );
-
-
-            modelBuilder.Entity<Trainer>().HasData(
-                new Trainer
-                {
-                    TrainerId = 1,
-                    FullName = "Alice Walker",
-                    Description = "Alice specializes in strength training and rehabilitation. With over 10 years of experience, she is dedicated to helping clients achieve their fitness goals.",
-                    Email = "alice.walker@example.com",
-                    YearsOfExperience = 10,
-                    PictureUrl = "https://example.com/images/alice-walker.jpg"
-                },
-                new Trainer
-                {
-                    TrainerId = 2,
-                    FullName = "Bob Johnson",
-                    Description = "Bob is a certified personal trainer with a passion for helping clients build endurance and improve cardiovascular health.",
-                    Email = "bob.johnson@example.com",
-                    YearsOfExperience = 7,
-                    PictureUrl = "https://example.com/images/bob-johnson.jpg"
-                },
-                new Trainer
-                {
-                    TrainerId = 3,
-                    FullName = "Cathy Davis",
-                    Description = "Cathy is a yoga instructor and personal trainer with 5 years of experience, focusing on flexibility, balance, and mental well-being.",
-                    Email = "cathy.davis@example.com",
-                    YearsOfExperience = 5,
-                    PictureUrl = "https://example.com/images/cathy-davis.jpg"
-                }
-            );
-
-            // Seed Personal Training Sessions (for next week)
-            modelBuilder.Entity<PersonalTrainingSession>().HasData(
-                new PersonalTrainingSession
-                {
-                    SessionId = 1,
-                    MemberId = 1, // John Doe
-                    TrainerId = 1, // Alice Walker
-                    SessionDate = DateTime.Now.AddDays(1).Date.AddHours(9), // Tomorrow at 9:00 AM
-                    Duration = 60 // 1-hour session
-                },
-                new PersonalTrainingSession
-                {
-                    SessionId = 2,
-                    MemberId = 2, // Jane Smith
-                    TrainerId = 2, // Bob Johnson
-                    SessionDate = DateTime.Now.AddDays(2).Date.AddHours(10), // 2 days later at 10:00 AM
-                    Duration = 90 // 1.5-hour session
-                },
-                new PersonalTrainingSession
-                {
-                    SessionId = 3,
-                    MemberId = 3, // Michael Brown
-                    TrainerId = 3, // Cathy Davis
-                    SessionDate = DateTime.Now.AddDays(3).Date.AddHours(11), // 3 days later at 11:00 AM
-                    Duration = 60 // 1-hour session
-                },
-                new PersonalTrainingSession
-                {
-                    SessionId = 4,
-                    MemberId = 1, // John Doe
-                    TrainerId = 2, // Bob Johnson
-                    SessionDate = DateTime.Now.AddDays(4).Date.AddHours(8), // 4 days later at 8:00 AM
-                    Duration = 120 // 2-hour session
-                },
-                new PersonalTrainingSession
-                {
-                    SessionId = 5,
-                    MemberId = 4, // Alice Johnson
-                    TrainerId = 1, // Alice Walker
-                    SessionDate = DateTime.Now.AddDays(5).Date.AddHours(7), // 5 days later at 7:00 AM
-                    Duration = 45 // 45-minute session
-                }
-            );
-
+               .OnDelete(DeleteBehavior.NoAction);
         }
+
+        // Seed Method
+        public void Seed()
+        {
+            // Check if data already exists in each table
+            if (!Memberships.Any())
+            {
+                // Seed Memberships
+                var memberships = new List<Membership>();
+                var membershipTypes = new[] { "Standard", "Premium", "Ultimate" };
+                var membershipCardImages = new[] { "https://i.pinimg.com/originals/64/84/79/648479153d80440b56e0bdc59be624f8.png",
+                                                  "https://i.pinimg.com/originals/ab/19/38/ab1938fdc1eab11424ab8272a476e20e.png",
+                                                  "https://i.pinimg.com/originals/3f/37/29/3f37299ce618797a262c36c949276dba.png"};
+                for (int i = 1; i <= 3; i++)
+                {
+                    memberships.Add(new Membership
+                    {
+                        MembershipId = i,
+                        Type = membershipTypes[i-1],
+                        Price = 50 * i,
+                        DurationInDays = 30,
+                        PhotoUrl = membershipCardImages[i-1]
+                    });
+                }
+                Memberships.AddRange(memberships);
+            }
+
+            if (!Members.Any())
+            {
+                // Seed Members
+                var members = new List<Member>();
+                for (int i = 1; i <= 5; i++)
+                {
+                    members.Add(new Member
+                    {
+                        MemberId = i,
+                        FullName = $"Member {i}",
+                        Email = $"member{i}@example.com",
+                        Password = "password123",
+                        ProfilePicUrl = "https://hips.hearstapps.com/hmg-prod/images/chris-64a7f18b4e9a3.png?crop=0.855xw:1.00xh;0.0238xw,0&resize=640:*",
+                        DateOfBirth = DateTime.Now.AddYears(-30).AddDays(i * -365),
+                        MembershipId = i % 2 == 0 ? 2 : 1,
+                        RegistrationDate = DateTime.Now.AddMonths(-i * 3),
+                        IsActive = i % 2 == 0
+                    });
+                }
+                Members.AddRange(members);
+            }
+
+            if (!Trainers.Any())
+            {
+                // Seed Trainers
+                var trainers = new List<Trainer>();
+                var trainerNames = new[] { "Bob Walker", "Son Johnson", "Cathy Davis" };
+                var trainerImages = new[] { "https://media.istockphoto.com/id/675179390/photo/muscular-trainer-writing-on-clipboard.jpg?s=612x612&w=0&k=20&c=9NKx1AwVMpPY0YBlk5H-hxx2vJSCu1Wc78BKRM9wFq0=", 
+                                            "https://bryanuniversity.edu/wp-content/uploads/personal-train-undergrad-cert@2x-scaled.jpg",
+                                            "https://media.istockphoto.com/id/856797530/photo/portrait-of-a-beautiful-woman-at-the-gym.jpg?s=612x612&w=0&k=20&c=0wMa1MYxt6HHamjd66d5__XGAKbJFDFQyu9LCloRsYU="};
+                for (int i = 1; i <= trainerNames.Length; i++)
+                {
+                    trainers.Add(new Trainer
+                    {
+                        TrainerId = i,
+                        FullName = trainerNames[i - 1],
+                        Description = $"Trainer {i} Description",
+                        Email = $"trainer{i}@example.com",
+                        YearsOfExperience = 5 + i,
+                        PictureUrl = trainerImages[i-1]
+                    });
+                }
+                Trainers.AddRange(trainers);
+            }
+
+            if (!PersonalTrainingSessions.Any())
+            {
+                // Seed Personal Training Sessions
+                var sessions = new List<PersonalTrainingSession>();
+                for (int i = 1; i <= 5; i++)
+                {
+                    sessions.Add(new PersonalTrainingSession
+                    {
+                        SessionId = i,
+                        MemberId = i,
+                        TrainerId = (i % 3) + 1, // Cycling through trainers
+                        SessionDate = DateTime.Now.AddDays(i).Date.AddHours(7 + i),
+                        Duration = 45 + (i * 15)
+                    });
+                }
+                PersonalTrainingSessions.AddRange(sessions);
+            }
+
+
+            // Seed Group Sessions
+            if (!GroupSessions.Any())
+            {
+                // Retrieve all trainers and members from the database
+                var trainers = Trainers.ToList();
+                var members = Members.ToList();
+
+                // Create a list to hold the group sessions
+                var groupSessions = new List<GroupSession>();
+
+                // Loop through each trainer
+                foreach (var trainer in trainers)
+                {
+                    // Generate a session for each trainer
+                    groupSessions.Add(new GroupSession
+                    {
+                        GroupSessionId = trainer.TrainerId, // Ensure unique ID (can be handled automatically by DB)
+                        SessionName = $"{trainer.FullName}'s Weekly Session",
+                        TrainerId = trainer.TrainerId,
+                        SessionDate = DateTime.Now.AddDays((int)DayOfWeek.Monday + trainer.TrainerId), // Each trainer's session is on a different weekday
+                        Duration = 60, // 1-hour session
+                        MaxParticipants = 3, // 3 members per session
+                        Members = members.Take(3).ToList() // Assign the first three members to the session
+                    });
+                }
+
+                // Add the group sessions to the database
+                GroupSessions.AddRange(groupSessions);
+            }
+
+            // Save changes to the database
+            SaveChanges();
+        }
+
 
     }
 }
