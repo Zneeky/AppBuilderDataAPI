@@ -147,7 +147,7 @@ namespace AppBuilderDataAPI.Data
                         SessionId = i,
                         MemberId = i,
                         TrainerId = (i % 3) + 1, // Cycling through trainers
-                        SessionDate = DateTime.Now.AddDays(i).Date.AddHours(4 + i),
+                        SessionDate = DateTime.Today.AddHours(9 + i * 2),
                         Duration = 60
                     });
                 }

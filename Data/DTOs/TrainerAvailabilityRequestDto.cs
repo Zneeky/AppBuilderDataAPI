@@ -3,6 +3,6 @@
     public class TrainerAvailabilityRequestDto
     {
         public int TrainerId { get; set; }
-        public DateTime Date { get; set; }
+        public string Date { get; set; } = null!;
     }
 }

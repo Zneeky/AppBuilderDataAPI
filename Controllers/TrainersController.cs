@@ -39,10 +39,12 @@ namespace AppBuilderDataAPI.Controllers
             return slots;
         }
 
-        [HttpGet("api/trainer/availability")]
-        public async Task<ActionResult<IEnumerable<TimeSlotDto>>> GetTrainerAvailability([FromBody] TrainerAvailabilityRequestDto request)
+        [HttpPost("api/trainer/availability/{trainerId}/{date}")]
+        public async Task<ActionResult<IEnumerable<TimeSlotDto>>> GetTrainerAvailability(int trainerId, string date)
         {
-            var availability = await GetTrainerAvailabilityAsync(request.TrainerId, request.Date);
+            string format = "ddd MMM dd yyyy HH:mm:ss 'GMT'zzz '(Eastern European Summer Time)'";
+            var availability = await GetTrainerAvailabilityAsync(trainerId, DateTime.ParseExact(date, format, System.Globalization.CultureInfo.InvariantCulture));
+            //var availability = await GetTrainerAvailabilityAsync(trainerId, DateTime.Parse(date));
             return availability;
         }
 
@@ -50,11 +52,11 @@ namespace AppBuilderDataAPI.Controllers
         {
             var timeSlots = GenerateTimeSlots(date);
             var personalSessions = await _context.PersonalTrainingSessions
-                .Where(s => s.TrainerId == trainerId && s.SessionDate.Date == date.Date)
+                .Where(s => s.TrainerId == trainerId && s.SessionDate.Date.Day == date.Date.Day)
                 .ToListAsync();
 
             var groupSessions = await _context.GroupSessions
-                .Where(g => g.TrainerId == trainerId && g.SessionDate.Date == date.Date)
+                .Where(g => g.TrainerId == trainerId && g.SessionDate.Date.Day == date.Date.Day)
                 .ToListAsync();
 
             var availability = timeSlots.Select(slot =>
@@ -67,7 +69,7 @@ namespace AppBuilderDataAPI.Controllers
 
                 return new TimeSlotDto
                 {
-                    Time = slot,
+                    Time = slot.ToString("HH:mm"),
                     IsAvailable = isAvailable,
                     SessionType = sessionType
                 };
