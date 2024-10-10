@@ -24,6 +24,28 @@ namespace AppBuilderDataAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Trainer>()
+                .HasMany(t => t.PersonalTrainingSessions)
+                .WithOne(pts => pts.Trainer)
+                .HasForeignKey(pts => pts.TrainerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Trainer>()
+                .HasMany(t => t.GroupSessions)
+                .WithOne(pts => pts.Trainer)
+                .HasForeignKey(pts => pts.TrainerId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Member>()
+                .HasMany(t => t.GroupSessions)
+                .WithMany(gs => gs.Members);
+
+            modelBuilder.Entity<Member>()
+                .HasMany(t => t.PersonalTrainingSessions)
+                .WithOne(ps => ps.Member)
+                .HasForeignKey(ps=>ps.MemberId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             modelBuilder.Entity<PersonalTrainingSession>()
                 .HasOne(pts => pts.Member)
                 .WithMany(m => m.PersonalTrainingSessions)

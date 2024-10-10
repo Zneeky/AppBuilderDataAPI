@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppBuilderDataAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/trainers")]
     [ApiController]
     public class TrainersController : ControllerBase
     {
@@ -22,6 +22,20 @@ namespace AppBuilderDataAPI.Controllers
         public async Task<ActionResult<IEnumerable<Trainer>>> GetMembers()
         {
             return await _context.Trainers.ToListAsync();
+        }
+
+
+
+        private List<DateTime> GenerateTimeSlots(DateTime date)
+        {
+            var slots = new List<DateTime>();
+            var startTime = new DateTime(date.Year, date.Month, date.Day, 9, 0, 0);
+
+            for (int i = 0; i < 12; i++) // 9 AM to 9 PM
+            {
+                slots.Add(startTime.AddHours(i));
+            }
+            return slots;
         }
 
 

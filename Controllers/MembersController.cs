@@ -12,7 +12,7 @@ using AppBuilderDataAPI.Data.DTOs;
 
 namespace AppBuilderDataAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/members")]
     [ApiController]
     public class MembersController : ControllerBase
     {
@@ -25,11 +25,12 @@ namespace AppBuilderDataAPI.Controllers
 
         // GET: api/Members
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Member>>> GetMembers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetMembers()
         {
-            var member1 = await _context.Members.FirstOrDefaultAsync();
-            var list = new List<Member> { member1 };
-            return list;
+            var members = await _context.Members.ToListAsync();
+            var memberDtos = members.Select(m => mapperMember(m)).ToList();
+
+            return memberDtos;
         }
 
         // Register a new member
@@ -56,12 +57,12 @@ namespace AppBuilderDataAPI.Controllers
             _context.Members.Add(member);
             await _context.SaveChangesAsync();
 
-            return Ok(member);
+            return mapperMember(member);
         }
 
         // Login and return a JWT token
         [HttpPost("login")]
-        public async Task<ActionResult<Member>> Login(LoginDto loginDTO)
+        public async Task<ActionResult<IEnumerable<MemberDto>>> Login(LoginDto loginDTO)
         {
             // Find the member by email
             var member = await _context.Members.FirstOrDefaultAsync(m => m.Email == loginDTO.Email);
@@ -71,13 +72,15 @@ namespace AppBuilderDataAPI.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            return member;
+            var list = new List<MemberDto> { mapperMember(member) };
+            return list;
         }
 
 
         // GET: api/Members/5
+        //If I do not return a list the AppBuilder config doesn't work, so I return a list with one element, I get a warning "This resource contains a single object"
         [HttpGet("member/{id}")]
-        public async Task<ActionResult<Member>> GetMember(int id)
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetMember(int id)
         {
             var member = await _context.Members.FindAsync(id);
 
@@ -85,18 +88,28 @@ namespace AppBuilderDataAPI.Controllers
             {
                 return NotFound();
             }
-
-            var memberDto = new MemberDto
-            {
-                FullName = member.FullName
-            };
-
-            return member;
+            var list = new List<MemberDto> { mapperMember(member) };
+            return list;
         }
 
         private bool MemberExists(int id)
         {
             return _context.Members.Any(e => e.MemberId == id);
+        }
+
+        private MemberDto mapperMember(Member member)
+        {
+            return new MemberDto
+            {
+                MemberId = member.MemberId,
+                FullName = member.FullName,
+                Email = member.Email,
+                Password = member.Password,
+                DateOfBirth = member.DateOfBirth,
+                RegistrationDate = member.RegistrationDate.Date,
+                IsActive = member.IsActive,
+                ProfilePicUrl = member.ProfilePicUrl
+            };
         }
     }
 }

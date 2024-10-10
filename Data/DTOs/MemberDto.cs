@@ -17,5 +17,7 @@ namespace AppBuilderDataAPI.Data.DTOs
         public DateTime RegistrationDate { get; set; } // When the member joined the gym
 
         public bool IsActive { get; set; } // Status of membership
+
+        public string ProfilePicUrl { get;set; } = null!;
     }
 }

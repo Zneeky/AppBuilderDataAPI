@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AppBuilderDataAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/memberships")]
     [ApiController]
     public class MembershipsController : ControllerBase
     {

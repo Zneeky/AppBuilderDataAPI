@@ -16,15 +16,7 @@ namespace AppBuilderDataAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            builder.Services.AddControllers(configure =>
-            {
-                configure.ReturnHttpNotAcceptable = true;
-
-            }).AddJsonOptions(options =>
-              {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-              })
-                .AddXmlDataContractSerializerFormatters();
+            builder.Services.AddControllers();
             
             builder.Services.AddCors(options =>
             {
