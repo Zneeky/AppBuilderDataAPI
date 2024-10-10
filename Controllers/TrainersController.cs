@@ -1,4 +1,5 @@
 ﻿using AppBuilderDataAPI.Data;
+using AppBuilderDataAPI.Data.DTOs;
 using AppBuilderDataAPI.Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,42 @@ namespace AppBuilderDataAPI.Controllers
             return slots;
         }
 
+        [HttpGet("api/trainer/availability")]
+        public async Task<ActionResult<IEnumerable<TimeSlotDto>>> GetTrainerAvailability([FromBody] TrainerAvailabilityRequestDto request)
+        {
+            var availability = await GetTrainerAvailabilityAsync(request.TrainerId, request.Date);
+            return availability;
+        }
+
+        private async Task<List<TimeSlotDto>> GetTrainerAvailabilityAsync(int trainerId, DateTime date)
+        {
+            var timeSlots = GenerateTimeSlots(date);
+            var personalSessions = await _context.PersonalTrainingSessions
+                .Where(s => s.TrainerId == trainerId && s.SessionDate.Date == date.Date)
+                .ToListAsync();
+
+            var groupSessions = await _context.GroupSessions
+                .Where(g => g.TrainerId == trainerId && g.SessionDate.Date == date.Date)
+                .ToListAsync();
+
+            var availability = timeSlots.Select(slot =>
+            {
+                var isGroupSession = (slot.Hour == 10 && slot.Minute == 0) || (slot.Hour == 19 && slot.Minute == 0);
+                var sessionType = isGroupSession ? "Group Session" : "Personal Training";
+
+                var isAvailable = !personalSessions.Any(s => s.SessionDate <= slot && s.SessionDate.AddMinutes(s.Duration) > slot) &&
+                                  !groupSessions.Any(g => g.SessionDate <= slot && g.SessionDate.AddMinutes(g.Duration) > slot);
+
+                return new TimeSlotDto
+                {
+                    Time = slot,
+                    IsAvailable = isAvailable,
+                    SessionType = sessionType
+                };
+            }).ToList();
+
+            return availability;
+        }
 
     }
 }

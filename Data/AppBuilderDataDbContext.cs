@@ -147,8 +147,8 @@ namespace AppBuilderDataAPI.Data
                         SessionId = i,
                         MemberId = i,
                         TrainerId = (i % 3) + 1, // Cycling through trainers
-                        SessionDate = DateTime.Now.AddDays(i).Date.AddHours(7 + i),
-                        Duration = 45 + (i * 15)
+                        SessionDate = DateTime.Now.AddDays(i).Date.AddHours(4 + i),
+                        Duration = 60
                     });
                 }
                 PersonalTrainingSessions.AddRange(sessions);
@@ -174,7 +174,7 @@ namespace AppBuilderDataAPI.Data
                         GroupSessionId = trainer.TrainerId, // Ensure unique ID (can be handled automatically by DB)
                         SessionName = $"{trainer.FullName}'s Weekly Session",
                         TrainerId = trainer.TrainerId,
-                        SessionDate = DateTime.Now.AddDays((int)DayOfWeek.Monday + trainer.TrainerId), // Each trainer's session is on a different weekday
+                        SessionDate = DateTime.Today.AddHours(10), // Each trainer's session is on a different weekday
                         Duration = 60, // 1-hour session
                         MaxParticipants = 3, // 3 members per session
                         Members = members.Take(3).ToList() // Assign the first three members to the session
