@@ -16,7 +16,7 @@ namespace AppBuilderDataAPI.Data.Models
         public string BodyType { get; set; } = null!; // E.g., "Ectomorph", "Mesomorph", etc.
 
         // List of daily meal suggestions
-        public ICollection<Meal> Meals { get; set; } // Meals suggested in this diet plan
+        public IEnumerable<Meal> Meals { get; set; } // Meals suggested in this diet plan
 
         // Constructor without parameters
         public DietPlan()

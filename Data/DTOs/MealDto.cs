@@ -1,17 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppBuilderDataAPI.Data.Models
+namespace AppBuilderDataAPI.Data.DTOs
 {
-    public class Meal
+    public class MealDto
     {
-        [Key]
         public int MealId { get; set; } // Primary key
 
-        [Required(ErrorMessage = "Meal name is required")]
-        [StringLength(100, ErrorMessage = "Meal name can't be longer than 100 characters")]
         public string Name { get; set; } = null!;
 
-        [Required(ErrorMessage = "Recipe is required")]
         public string Recipe { get; set; } = null!;
 
         public string Type { get; set; } = null!; // breakfast, lunch, dinner, snack
@@ -24,13 +20,6 @@ namespace AppBuilderDataAPI.Data.Models
 
         public int Fat { get; set; } // Amount of fat in grams
 
-        public IEnumerable<DietPlan> DietPlans { get; set; } = null!;
-
         public string PicUrl { get; set; } = null!;
-
-        public Meal()
-        {
-            DietPlans = new List<DietPlan>();
-        }
     }
 }

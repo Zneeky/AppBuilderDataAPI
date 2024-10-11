@@ -63,6 +63,14 @@ namespace AppBuilderDataAPI.Data
                .WithMany(t => t.GroupSessions)
                .HasForeignKey(pts => pts.TrainerId)
                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DietPlan>()
+                .HasMany(dp => dp.Meals)
+                .WithMany(m=>m.DietPlans);
+
+            modelBuilder.Entity<Meal>()
+                .HasMany(m => m.DietPlans)
+                .WithMany(dp => dp.Meals);
         }
 
         // Seed Method
@@ -185,8 +193,109 @@ namespace AppBuilderDataAPI.Data
                 GroupSessions.AddRange(groupSessions);
             }
 
-            // Save changes to the database
-            SaveChanges();
+
+            if (!DietPlans.Any())
+            {
+                // Seed Meals
+                var meals = new List<Meal>
+                {
+                    new Meal
+                    {
+                        MealId = 1,
+                        Name = "Oatmeal with Berries",
+                        Recipe = "Combine oats, almond milk, and top with fresh berries.",
+                        Type = "Breakfast",
+                        Calories = 350,
+                        Protein = 10,
+                        Carbs = 45,
+                        Fat = 8,
+                        PicUrl = "https://joybauer.com/wp-content/uploads/2017/12/Oatmeal-with-berries2.jpg"
+                    },
+                    new Meal
+                    {
+                        MealId = 2,
+                        Name = "Grilled Chicken Salad",
+                        Recipe = "Grill chicken breast and serve over mixed greens with olive oil and lemon dressing.",
+                        Type = "Lunch",
+                        Calories = 400,
+                        Protein = 30,
+                        Carbs = 15,
+                        Fat = 20,
+                        PicUrl = "https://www.crunchycreamysweet.com/wp-content/uploads/2018/06/easy-grilled-chicken-salad-1.jpg"
+                    },
+                    new Meal
+                    {
+                        MealId = 3,
+                        Name = "Salmon with Quinoa",
+                        Recipe = "Bake salmon and serve with cooked quinoa and steamed broccoli.",
+                        Type = "Dinner",
+                        Calories = 500,
+                        Protein = 40,
+                        Carbs = 35,
+                        Fat = 22,
+                        PicUrl = "https://www.eatingwell.com/thmb/f8nLtKqcDmCcg0_UNhT2Z5mVhO8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8110444-fe18d867dddf4b7ca90ac3c05dff42a0.jpg"
+                    },
+                    new Meal
+                    {
+                        MealId = 4,
+                        Name = "Greek Yogurt with Almonds",
+                        Recipe = "Serve Greek yogurt topped with a handful of almonds and a drizzle of honey.",
+                        Type = "Snack",
+                        Calories = 200,
+                        Protein = 15,
+                        Carbs = 10,
+                        Fat = 12,
+                        PicUrl =  "https://bebeloveokazu.com/wp-content/uploads/2013/03/Greek-Yogurt-Almond-Granola-Honey-2.jpg"
+                    }
+                };
+
+                Meals.AddRange(meals);
+
+                // Seed Diet Plans
+                var dietPlans = new List<DietPlan>
+                {
+                    new DietPlan
+                    {
+                        DietPlanId = 1,
+                        Name = "Weight Loss Plan",
+                        BodyType = "Ectomorph",
+                        Meals = new List<Meal>
+                        {
+                            meals[0], // Oatmeal with Berries (Breakfast)
+                            meals[1], // Grilled Chicken Salad (Lunch)
+                            meals[3]  // Greek Yogurt with Almonds (Snack)
+                        }
+                    },
+                    new DietPlan
+                    {
+                        DietPlanId = 2,
+                        Name = "Muscle Gain Plan",
+                        BodyType = "Mesomorph",
+                        Meals = new List<Meal>
+                        {
+                            meals[1], // Grilled Chicken Salad (Lunch)
+                            meals[2], // Salmon with Quinoa (Dinner)
+                            meals[3]  // Greek Yogurt with Almonds (Snack)
+                        }
+                    },
+                    new DietPlan
+                    {
+                        DietPlanId = 3,
+                        Name = "Balanced Nutrition Plan",
+                        BodyType = "Endomorph",
+                        Meals = new List<Meal>
+                        {
+                            meals[0], // Oatmeal with Berries (Breakfast)
+                            meals[1], // Grilled Chicken Salad (Lunch)
+                            meals[2]  // Salmon with Quinoa (Dinner)
+                        }
+                    }
+                };
+
+                DietPlans.AddRange(dietPlans);
+            }
+                // Save changes to the database
+                SaveChanges();
         }
 
 
