@@ -70,19 +70,19 @@ namespace AppBuilderDataAPI.Controllers
                 {
                     MacrosName = "Protein",
                     Quantity = meal.Protein,
-                    Summary = $"Has {meal.Protein}g of protein"
+                    Summary = $"{meal.Protein}g of protein/"
                 },
                 new MealChartItemDto
                 {
                     MacrosName = "Fat",
                     Quantity = meal.Fat,
-                    Summary = $"Has {meal.Fat}g of fat"
+                    Summary = $"{meal.Fat}g of fat/"
                 },
                 new MealChartItemDto
                 {
                     MacrosName = "Carbs",
                     Quantity = meal.Carbs,
-                    Summary = $"Has {meal.Carbs}g of carbs"
+                    Summary = $"{meal.Carbs}g of carbs"
                 },
             };
             
