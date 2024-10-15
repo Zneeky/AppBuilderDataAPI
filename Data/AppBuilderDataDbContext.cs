@@ -294,8 +294,41 @@ namespace AppBuilderDataAPI.Data
 
                 DietPlans.AddRange(dietPlans);
             }
-                // Save changes to the database
-                SaveChanges();
+
+            // Check if there are any Training Programs and Exercises
+            if (!TrainingPrograms.Any() && !Exercises.Any())
+            {
+                // Seed Exercises
+                var exercises = new List<Exercise>
+                {
+                    new Exercise { ExerciseId = 1, Name = "Bench Press", RepsRange = "8-12 reps", MuscleGroupTarget = "Chest", PicUrl = "https://cdn.shopify.com/s/files/1/1497/9682/files/2_3b458939-656d-42a7-ab89-3f827f6b9a83.jpg?v=1648826582" },
+                    new Exercise { ExerciseId = 2, Name = "Overhead Press", RepsRange = "8-12 reps", MuscleGroupTarget = "Shoulders", PicUrl = "https://www.lyfta.app/_next/image?url=%2Fthumbnails%2F04261201.jpg&w=3840&q=20" },
+                    new Exercise { ExerciseId = 3, Name = "Tricep Dips", RepsRange = "8-12 reps", MuscleGroupTarget = "Triceps", PicUrl="https://cdn.shopify.com/s/files/1/1497/9682/files/Benefits_of_Mastering_Tricep_Dips.jpg?v=1687254157&width=750" },
+                    new Exercise { ExerciseId = 4, Name = "Pull-ups", RepsRange = "8-12 reps", MuscleGroupTarget = "Back", PicUrl="https://www.burnthefatinnercircle.com/members/images/1930.png?cb=20240911131701" },
+                    new Exercise { ExerciseId = 5, Name = "Barbell Row", RepsRange = "8-12 reps", MuscleGroupTarget = "Back", PicUrl="https://blog.myarsenalstrength.com/hs-fs/hubfs/Bent%20over%20row%20exercise.png" },
+                    new Exercise { ExerciseId = 6, Name = "Bicep Curls", RepsRange = "8-12 reps", MuscleGroupTarget = "Biceps", PicUrl="https://www.endomondo.com/wp-content/uploads/2024/08/Cable-Bicep-Curl-Guide.png" },
+                    new Exercise { ExerciseId = 7, Name = "Squats", RepsRange = "8-12 reps", MuscleGroupTarget = "Legs", PicUrl="https://static.strengthlevel.com/images/exercises/squat/squat-800.jpg" },
+                    new Exercise { ExerciseId = 8, Name = "Deadlifts", RepsRange = "8-12 reps", MuscleGroupTarget = "Legs", PicUrl="https://www.inspireusafoundation.org/wp-content/uploads/2022/05/sumo-deadlift-form.gif" },
+                    new Exercise { ExerciseId = 9, Name = "Leg Press", RepsRange = "8-12 reps", MuscleGroupTarget = "Legs", PicUrl="https://www.inspireusafoundation.org/wp-content/uploads/2022/03/single-leg-leg-press.gif" },
+                    new Exercise { ExerciseId = 10, Name = "Lunges", RepsRange = "8-12 reps", MuscleGroupTarget = "Legs", PicUrl="https://homeworkouts.org/wp-content/uploads/anim-forward-lunges.gif"},
+                    new Exercise { ExerciseId = 11, Name = "Leg Curls", RepsRange = "8-12 reps", MuscleGroupTarget = "Hamstrings", PicUrl="https://www.lyfta.app/thumbnails/05991201.jpg" },
+                    new Exercise { ExerciseId = 12, Name = "Calf Raises", RepsRange = "15-20 reps", MuscleGroupTarget = "Calves", PicUrl="https://www.lyfta.app/_next/image?url=https%3A%2F%2Flyfta.app%2Fimages%2Fexercises%2F01111101.png&w=3840&q=20" }
+                };
+                        Exercises.AddRange(exercises);
+
+                // Seed Training Programs
+                var trainingPrograms = new List<TrainingProgram>
+                {
+                    new TrainingProgram { TrainingProgramId = 1, Title = "Push Program", Exercises = new List<Exercise>{ exercises[0], exercises[1], exercises[2] } },
+                    new TrainingProgram { TrainingProgramId = 2, Title = "Pull Program", Exercises = new List<Exercise>{ exercises[3], exercises[4], exercises[5] } },
+                    new TrainingProgram { TrainingProgramId = 3, Title = "Legs Program", Exercises = new List<Exercise>{ exercises[6], exercises[7], exercises[8], exercises[9], exercises[10], exercises[11] } }
+                };
+                
+                TrainingPrograms.AddRange(trainingPrograms);
+
+            }
+            // Save changes to the database
+            SaveChanges();
         }
 
 

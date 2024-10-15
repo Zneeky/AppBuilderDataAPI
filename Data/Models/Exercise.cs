@@ -19,5 +19,8 @@ namespace AppBuilderDataAPI.Data.Models
         [StringLength(100, ErrorMessage = "Target muscle group can't be longer than 100 characters")]
         public string MuscleGroupTarget { get; set; } = null!; // The muscle group targeted by the exercise
 
+        [Required(ErrorMessage = "PicUrl is required")]
+        public string PicUrl { get; set; } = null!; // The equipment needed for the exercise
+
     }
 }
