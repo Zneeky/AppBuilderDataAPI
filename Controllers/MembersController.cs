@@ -92,6 +92,40 @@ namespace AppBuilderDataAPI.Controllers
             return list;
         }
 
+        [HttpGet("member/{id}/trainingSessions")]
+
+        public async Task<ActionResult<IEnumerable<MemberTrainingSessionDto>>> GetMemberTrainingSessions(int id)
+        {
+            var member = await _context.Members.FindAsync(id);
+            var trainingPersonalSessions = await _context.PersonalTrainingSessions
+                .Include(ts => ts.Trainer)
+                .Where(ts => ts.MemberId == id)
+                .Select(ts => new MemberTrainingSessionDto
+                {
+                    TrainerName= ts.Trainer.FullName,
+                    TrainerPicUrl = ts.Trainer.PictureUrl,
+                    DateTime = ts.SessionDate.ToString(),
+                    Type = "Personal Training"
+                })
+                .ToListAsync();
+
+            var trainingGroupSessions = await _context.GroupSessions
+                .Include(gs => gs.Trainer)
+                .Where(gs => gs.Members.Any(m=> m.MemberId==id))
+                .Select(ts => new MemberTrainingSessionDto
+                {
+                    TrainerName = ts.Trainer.FullName,
+                    TrainerPicUrl = ts.Trainer.PictureUrl,
+                    DateTime = ts.SessionDate.ToString(),
+                    Type = "Group Training"
+                })
+                .ToListAsync();
+
+            var trainingSessions = trainingPersonalSessions.Concat(trainingGroupSessions).ToList();
+
+            return trainingSessions;
+        }
+
         private bool MemberExists(int id)
         {
             return _context.Members.Any(e => e.MemberId == id);
